@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="border border-rounded shadow p-3 rounded">
+                <h1>Login</h1>
+                <form action="/login" method="post" >
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Email address</label>
+                      <input type="email" name="email" required class="form-control" id="email" >
+                    </div>
+                    <div class="mb-3">
+                      <label for="password" class="form-label">Password</label>
+                      <input type="password" name="password" required class="form-control" id="password">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Remember Me</label>
+                    </div>
+                        <div class="d-flex justify-content-center mt-3" style="flex-direction: column;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                        <small class="d-block text-secondary mt-2 text-center" >Don't have account you can <a href="/register" class="text-primary" >Register</a></small>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
