@@ -1,4 +1,5 @@
 const fs = require("file-system");
+const CryptoJS = require("crypto-js")
 
 const dataUsers = () => {
     const buffer = fs.readFileSync("./data/user.json","utf-8")
@@ -11,9 +12,13 @@ const dataUsers = () => {
 function login(email,password){
     const users = dataUsers()
     const data = users.find(user => user.email === email);
-    if(data && data.password === password){
-        delete data.password
-        return data;
+    if(data){
+        const hasPas = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex)
+        if(data.password === hasPas){
+            delete data.password
+            return data
+        }
+        return false;
     }else {
         return false;
     }

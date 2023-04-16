@@ -7,20 +7,8 @@ const CryptoJS = require("crypto-js");
 const auth = require("./sistem/auth");
 const app = express()
 const port = 3000
-const key = "M1n3cr4ftJ0k0w1d0d0Pr3s1d3n"
-
-
-
-
-// const cron = require("node-cron");
-
-// cron.schedule("*/1 * * * *",() => {
-//     console.log("muncul permenit")
-// })
-
-
-
-
+const key = Math.random().toString()
+const cron = require("node-cron");
 
 // konfigurasi session 
 app.use(session({
@@ -35,11 +23,15 @@ app.use(session({
 
 app.use(cookieParser());
 
-
 app.set("view engine","ejs");
 app.use(expressLayout);
 app.use(express.urlencoded({ extended:true }));
 
+function cronJob () {
+    cron.schedule("*/1 * * * *",() => {
+        console.log("muncul cuman 1 dan permenit")
+    })
+}
 
 function checkLogin(req,res,next){
     if(req.session.loggedIn){
@@ -58,6 +50,7 @@ function checkLogin(req,res,next){
 
         if(decryted){
             req.session.loggedIn = CryptoJS.AES.encrypt(JSON.stringify(decryted),key).toString();
+            cronJob()
             next()
         }
     }
@@ -86,11 +79,7 @@ app.get("/",checkLogin,(req,res) => {
 app.get("/login",(req,res) => {
     if(req.session.loggedIn){
         res.redirect("/");
-    }else if (req.cookies.remember){
-        req.session.loggedIn = req.cookies.remember;
-        res.redirect("/")
-    }
-    else {
+    }else {
         res.render("login",{
             layout:"layout/template",
             title:"Login",
@@ -101,11 +90,10 @@ app.get("/login",(req,res) => {
 app.post("/login",(req,res) => {
     const user = auth.login(req.body.email,req.body.password)
     if(user){
-        req.session.loggedIn  = CryptoJS.AES.encrypt(JSON.stringify(user),key).toString;
+        req.session.loggedIn  = CryptoJS.AES.encrypt(JSON.stringify(user),key).toString();
         if(req.body.remember){
             const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(user), key).toString();
             res.cookie("remember",encryptedData,{ maxAge: 3600000, httpOnly: true, secure: true })
-            
         }
         res.redirect("/")
     }else{
