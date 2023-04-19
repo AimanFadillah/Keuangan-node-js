@@ -66,7 +66,12 @@ app.post("/home", auth.checkLogin, async (req, res) => {
 })
 
 app.delete("/home",auth.checkLogin,async (req,res) => {
-    const id = req.body.id;
+    try{
+       await Pendapatans.deleteOne({_id:req.body.id})
+    }catch{
+        res.redirect("/")
+    }
+    res.redirect("/")
 })
 
 app.get("/login", (req, res) => {
