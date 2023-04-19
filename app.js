@@ -11,7 +11,7 @@ const port = 3000
 const key = auth.key;
 const cron = require("node-cron");
 const bodyParser = require("body-parser")
-
+const methodOverridde = require("method-override");
 
 require("./sistem/db");
 const { Pendapatans } = require("./modal/pendapatan.js");
@@ -20,6 +20,7 @@ const { Pendapatans } = require("./modal/pendapatan.js");
 app.set("view engine", "ejs");
 
 // middleware
+app.use(methodOverridde("_method"))
 app.use(cookieParser());
 app.use(express.static("public"))
 app.use(expressLayout);
@@ -37,14 +38,13 @@ app.use(session({
 }))
 
 
-function cronJob() {
-    cron.schedule("*/1 * * * *", () => {
-        console.log("muncul cuman 1 dan permenit")
-    })
-}
+
+cron.schedule("*/1 * * * *", () => {
+    console.log("muncul cuman 1 dan permenit")
+})
+
 
 app.get("/", auth.checkLogin, async (req, res) => {
-    cronJob()
     const pendapatan = await Pendapatans.find().sort({ tanggal: -1 });
     res.render("home", {
         layout: "layout/template",
@@ -54,14 +54,19 @@ app.get("/", auth.checkLogin, async (req, res) => {
     })
 })
 
-app.post("/home", auth.checkLogin, (req, res) => {
+app.post("/home", auth.checkLogin, async (req, res) => {
     req.body.tanggal = new Date();
+    let newPendapatan;
     try{
-        Pendapatans.insertMany(req.body)
+        newPendapatan = await Pendapatans.insertMany(req.body)
     }catch{
         res.redirect("/")
     }
-    res.redirect("/")
+    res.json(newPendapatan)
+})
+
+app.delete("/home",auth.checkLogin,async (req,res) => {
+    const id = req.body.id;
 })
 
 app.get("/login", (req, res) => {

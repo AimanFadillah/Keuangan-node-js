@@ -22,16 +22,16 @@
                     <% if(pendapatan.length !== 0) { %>
                     <% for(pendapatans of pendapatan) { %>
                       <% if(pendapatans.opsi === "untung") { %>
-                      <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" data-id="<%= pendapatans.id %>"
+                      <div class="kegiatan rounded mt-2 px-2 pb-1 d-flex justify-content-between"
                       <% if(no == 1){ %>id="pertamaKegiatan"<% } %>
                       style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
                       <% }else { %>    
-                      <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" data-id="<%= pendapatans.id %>"
+                      <div class="kegiatan rounded mt-2 px-2 pb-1 d-flex justify-content-between" 
                       <% if(no == 1){ %>id="pertamaKegiatan"<% } %>
                       style="background-color: #F15A59;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
                       <% } %>
                         <h6 class="my-1"  ><%= pendapatans.kegiatan %></h6>
-                          <h6 class="kontenKiri text-light my-1">
+                          <h6 class="kontenKiri text-light my-1" data-id="<%= pendapatans.id %>">
                             <% if(pendapatans.opsi === "untung") { %>
                             <i class="bi bi-arrow-up"></i></i>
                             <% }else { %>
@@ -109,7 +109,7 @@
   <div class="modal fade" id="modalHapus" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-body rounded">
+        <div class="modal-body rounded" id="bodyHapus" >
           <small style="text-align: center;">Jika anda menghapus ini maka akan mempengaruhi isi tabungan</small>
             <div class="d-flex mt-3 justify-content-between">
               <button class="btn btn-danger" data-bs-dismiss="modal" style="width: 49%;" >Batal</button>
