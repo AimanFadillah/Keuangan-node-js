@@ -10,6 +10,8 @@ const app = express()
 const port = 3000
 const key = auth.key;
 const cron = require("node-cron");
+const bodyParser = require("body-parser")
+
 
 require("./sistem/db");
 const { Pendapatans } = require("./modal/pendapatan.js");
@@ -21,7 +23,9 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(express.static("public"))
 app.use(expressLayout);
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.raw({ type: 'multipart/form-data' }));
 app.use(session({
     secret: "secret-key",
     resave: false,
@@ -41,19 +45,23 @@ function cronJob() {
 
 app.get("/", auth.checkLogin, async (req, res) => {
     cronJob()
-    const pendapatan = await Pendapatans.find()
+    const pendapatan = await Pendapatans.find().sort({ tanggal: -1 });
     res.render("home", {
         layout: "layout/template",
         title: "HomePage",
         pendapatan,
+        no:1,
     })
 })
 
 app.post("/home", auth.checkLogin, (req, res) => {
     req.body.tanggal = new Date();
-    Pendapatans.insertMany(req.body).then(() => {
+    try{
+        Pendapatans.insertMany(req.body)
+    }catch{
         res.redirect("/")
-    });
+    }
+    res.redirect("/")
 })
 
 app.get("/login", (req, res) => {

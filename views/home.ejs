@@ -7,30 +7,45 @@
                         <h1 class="text-center text-success"  >1.0000</h1>
                     </div>
                 </div>
-                <div class="d-flex justify-content-between" style="gap: 10px;">
-                    <div class="text-center rounded py-1" id="pendapatan" style="width: 100%;background-color: #9CFF2E;box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;"><i class="bi bi-wallet2"></i> Pendapatan</div>
-                    <div class="text-center rounded py-1" id="penghasilan" style="width: 100%;background-color: #FDFF00;box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;"><i class="bi bi-coin"></i> Penghasilan</div>
+                <div class="d-flex justify-content-between" style="gap: 3px;">
+                    <div class="text-center py-1 rounded-top " id="pendapatan" style="width: 100%;background-color: #917FB3;color: white;"><i class="bi bi-wallet2"></i> Pendapatan</div>
+                    <div class="text-center py-1 rounded-top" id="penghasilan" style="width: 100%;border:1px #917FB3 solid;border-bottom: 0px;"><i class="bi bi-coin"></i> Penghasilan</div>
                 </div>
-                <div class="mt-3 rounded p-2" style="background-color: #917FB3;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                <div class="rounded-bottom p-2" style="background-color: #917FB3;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
                     <div class="d-flex justify-content-end">
-                        <button class="badge bg-danger border-0 mx-2" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"><i class="bi bi-list-nested"></i> 2</button>
+                        <button class="badge bg-danger border-0 mx-2" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"><i class="bi bi-list-nested"></i> <span id="total" ><%= pendapatan.length %></span></button>
                         <button class="badge bg-primary border-0 " id="perbaiki" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"><i class="bi bi-tools"></i> Perbaiki</button>
                         <button class="badge bg-success border-0 ms-2" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;" data-bs-toggle="modal" data-bs-target="#modalCreate"><i class="bi bi-plus-lg"></i> Tambah</button>
                     </div>
-                    <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                        <h6 class="my-1">Ngater Galon</h6>
-                        <h6 class="kontenKiri text-light my-1"><i class="bi bi-arrow-up"></i>Rp3.000</h6>
-                    </div>
-                    <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" style="background-color: #F15A59;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                        <h6 class="my-1">Galon Murag</h6>
-                        <h6 class="kontenKiri text-light my-1"><i class="bi bi-arrow-down"></i></i>Rp3.000</h6>
-                    </div>
+                    
+                    <div id="wadahPendapatan">
+                    <% if(pendapatan.length !== 0) { %>
                     <% for(pendapatans of pendapatan) { %>
-                    <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                        <h6 class="my-1"><%= pendapatans.kegiatan %></h6>
-                        <h6 class="kontenKiri text-light my-1"><i class="bi bi-arrow-up"></i></i><%= Number(pendapatans.pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR"}) %></h6>
-                    </div>                                                                                                            
+                      <% if(pendapatans.opsi === "untung") { %>
+                      <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" data-id="<%= pendapatans.id %>"
+                      <% if(no == 1){ %>id="pertamaKegiatan"<% } %>
+                      style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                      <% }else { %>    
+                      <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" data-id="<%= pendapatans.id %>"
+                      <% if(no == 1){ %>id="pertamaKegiatan"<% } %>
+                      style="background-color: #F15A59;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                      <% } %>
+                        <h6 class="my-1"  ><%= pendapatans.kegiatan %></h6>
+                          <h6 class="kontenKiri text-light my-1">
+                            <% if(pendapatans.opsi === "untung") { %>
+                            <i class="bi bi-arrow-up"></i></i>
+                            <% }else { %>
+                            <i class="bi bi-arrow-down"></i></i>
+                            <% }no++ %>
+                            <%= Number(pendapatans.pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR"}) %></h6>
+                      </div>                                                                                                            
+                    <% }  %>
+                    <% }else { %>
+                      <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-center" id="pertamaKegiatan" style="background-color: #7C96AB ;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                          <h5 class="my-1"><i class="bi bi-server"></i> Tidak Ada Kegiatan</h5>
+                      </div>
                     <% } %>
+                    </div>
                 </div>
             
             </div>
@@ -44,7 +59,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body rounded">
-            <form method="post" action="/home" id="formCreate" >
+            <form id="formCreate" >
               <h3 class="text-center mb-3">Buat Pendapatan</h3>
                 <div class="mb-3">
                   <label for="kegiatan" class="fw-bold form-label"><i class="bi bi-activity"></i> Kegiatan</label>
@@ -59,6 +74,7 @@
                 <button style="width: 100%;" type="button" data-opsi="untung" class="submitCreate btn btn-success mb-1"><i class="bi bi-graph-up"></i> Keuntungan</button>
                 <button style="width: 100%;" type="button" data-opsi="rugi" class="submitCreate btn btn-danger"><i class="bi bi-graph-down"></i> Kerugian</button>
             </form>
+            <button id="tutupModal" data-bs-dismiss="modal"  style="border: none;background: none" ></button>
         </div>
       </div>
     </div>

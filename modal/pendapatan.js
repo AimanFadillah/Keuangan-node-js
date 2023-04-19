@@ -12,6 +12,10 @@ const Pendapatans = mongoose.model("pendapatans",{
     tanggal:{
         type:Date,
         required:true,
+    },
+    opsi:{
+        type:String,
+        required:true,
     }
 })
 
