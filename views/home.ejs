@@ -21,24 +21,24 @@
                     <div id="wadahPendapatan">
                     <% if(pendapatan.length !== 0) { %>
                     <% for(pendapatans of pendapatan) { %>
-                      <% if(pendapatans.opsi === "untung") { %>
-                      <div class="pendapatanke<%= pendapatans.id %> kegiatan rounded mt-2 px-2 pb-1 d-flex justify-content-between"
-                      <% if(no == 1){ %>id="pertamaKegiatan"<% } %>
-                      style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                      <% }else { %>    
-                      <div class="pendapatanke<%= pendapatans.id %> kegiatan rounded mt-2 px-2 pb-1 d-flex justify-content-between" 
-                      <% if(no == 1){ %>id="pertamaKegiatan"<% } %>
-                      style="background-color: #F15A59;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                      <% } %>
-                        <h6 class="my-1"  ><%= pendapatans.kegiatan %></h6>
-                          <h6 class="kontenKiri text-light my-1" data-id="<%= pendapatans.id %>">
-                            <% if(pendapatans.opsi === "untung") { %>
-                            <i class="bi bi-arrow-up"></i></i>
-                            <% }else { %>
-                            <i class="bi bi-arrow-down"></i></i>
-                            <% }no++ %>
-                            <%= Number(pendapatans.pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR"}) %></h6>
-                      </div>                                                                                                            
+                      <div class="pendapatanke<%= pendapatans.id %> kegiatan"  <% if(no == 1){ %>id="pertamaKegiatan"<% } %>>
+                        <% if(pendapatans.opsi === "untung") { %>
+                        <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between"
+                        style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                        <% }else { %>    
+                        <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" 
+                        style="background-color: #F15A59;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                        <% } %>
+                          <h6 class="my-1"  ><%= pendapatans.kegiatan %></h6>
+                            <h6 class="kontenKiri text-light my-1" data-id="<%= pendapatans.id %>">
+                              <% if(pendapatans.opsi === "untung") { %>
+                              <i class="bi bi-arrow-up"></i></i>
+                              <% }else { %>
+                              <i class="bi bi-arrow-down"></i></i>
+                              <% }no++ %>
+                              <%= Number(pendapatans.pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR"}) %></h6>
+                        </div>
+                      </div>                                                                                                         
                     <% }  %>
                     <% }else { %>
                       <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-center" id="pertamaKegiatan" style="background-color: #7C96AB ;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
@@ -87,22 +87,8 @@
   <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-body rounded">
-            <form>
-              <h3 class="text-center mb-3">Ubah Pendapatan</h3>
-                <div class="mb-3">
-                  <label for="kegiatan" class="fw-bold form-label"><i class="bi bi-activity"></i> Kegiatan</label>
-                  <input type="text" required class="form-control" id="kegiatan" >
-                  <div id="note" class="form-text">Maksimal 10 huruf</div>
-                </div>
-                <div class="mb-3">
-                  <label for="pendapatan" class="fw-bold form-label"><i class="bi bi-cash"></i> Pendapatan</label>
-                  <input type="number" required class="form-control" id="pendapatan" >
-                </div>
-                <h6 class="text-dark fw-bold"><i class="bi bi-question-lg"></i> Opsi</h6>
-                <button style="width: 100%;" class="btn btn-success mb-1"><i class="bi bi-graph-up"></i> Keuntungan</button>
-                <button style="width: 100%;" class="btn btn-danger"><i class="bi bi-graph-down"></i> Kerugian</button>
-            </form>
+        <div class="modal-body rounded " id="bodyEdit">
+            
         </div>
       </div>
     </div>

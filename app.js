@@ -15,6 +15,7 @@ const methodOverridde = require("method-override");
 
 require("./sistem/db");
 const { Pendapatans } = require("./modal/pendapatan.js");
+const { Pemiliks } = require("./modal/pemilik.js");
 
 // konfigurasi session 
 app.set("view engine", "ejs");
@@ -45,6 +46,11 @@ cron.schedule("*/1 * * * *", () => {
 
 
 app.get("/", auth.checkLogin, async (req, res) => {
+    if(req.query.find){
+        const find = await Pendapatans.find({_id:req.query.find})
+        res.json(find)
+        return;
+    }
     const pendapatan = await Pendapatans.find().sort({ tanggal: -1 });
     res.render("home", {
         layout: "layout/template",
@@ -57,11 +63,31 @@ app.get("/", auth.checkLogin, async (req, res) => {
 app.post("/home", auth.checkLogin, async (req, res) => {
     req.body.tanggal = new Date();
     let newPendapatan;
-    try{
+
         newPendapatan = await Pendapatans.insertMany(req.body)
-    }catch{
-        res.redirect("/")
-    }
+        const userPemilik = await Pemiliks.find({_id:"643f9f89a2b870c355eff09a"}) 
+        if(req.body.opsi === "untung"){
+            const hasil = Number(userPemilik[0].tabungan) + Number(req.body.pendapatan)
+            Pemiliks.updateOne(
+                {_id:"643f9f89a2b870c355eff09a"},
+                {
+                    $set:{
+                        tabungan:Number(hasil),
+                    },
+                },
+            )
+        }else{
+            const hasil = Number(userPemilik[0].tabungan) - Number(req.body.pendapatan)
+            Pemiliks.updateOne(
+                {_id:"643f9f89a2b870c355eff09a"},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+        }
+
     res.json(newPendapatan)
 })
 
@@ -72,6 +98,20 @@ app.delete("/home",auth.checkLogin,async (req,res) => {
         res.redirect("/")
     }
     res.redirect("/")
+})
+
+app.put("/home",auth.checkLogin,async(req,res) => {
+    await Pendapatans.updateOne(
+        {_id:req.body.id},
+        {
+            $set:{
+                kegiatan:req.body.kegiatan,
+                pendapatan:req.body.pendapatan,
+                opsi:req.body.opsi,
+            },
+        },
+    )
+    res.redirect("/");
 })
 
 app.get("/login", (req, res) => {

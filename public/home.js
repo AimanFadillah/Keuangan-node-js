@@ -5,6 +5,7 @@ const pendapatanCreate = document.querySelector("#pendapatanCreate")
 const tutupModal = document.querySelector("#tutupModal")
 const bodyHapus = document.querySelector("#bodyHapus")
 const wadahPendapatan = document.querySelector("#wadahPendapatan")
+const bodyEdit = document.querySelector("#bodyEdit")
 let total = document.querySelector("#total")
 
 document.addEventListener("click", (e) => {
@@ -26,6 +27,104 @@ document.addEventListener("click", (e) => {
     if (e.target.id === "yesHapusPendapatan") {
         HapusKegiatan(e.target);
     }
+
+    if(e.target.classList.contains("editPendapatan")){
+        const id = e.target.getAttribute("data-id");
+        bodyEdit.innerHTML = 
+        `
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" style="width: 3rem; height: 3rem;color:#41644A" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        `
+        fetch(`/?find=${id}`)
+        .then(response => response.json())
+        .then(data => {
+            const kegiatanEdit = data[0];
+            bodyEdit.innerHTML = 
+            `
+            <form>
+                <h3 class="text-center mb-3">Ubah Pendapatan</h3>
+                <div class="mb-3">
+                    <label for="kegiatan" class="fw-bold form-label"><i class="bi bi-activity"></i> Kegiatan</label>
+                    <input type="text" value=${kegiatanEdit.kegiatan}  required class="form-control" id="kegiatanEdit" >
+                    <div id="note" class="form-text">Maksimal 10 huruf</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pendapatan" class="fw-bold form-label"><i class="bi bi-cash"></i> Pendapatan</label>
+                    <input type="number" required class="form-control" value="${kegiatanEdit.pendapatan}" id="pendapatanEdit" >
+                </div>
+                <h6 class="text-dark fw-bold"><i class="bi bi-question-lg"></i> Opsi</h6>
+                <button style="width: 100%;" data-opsi="untung" data-id="${kegiatanEdit._id}" id="editKeuntungan" class="submitEditButton btn btn-success mb-1"><i class="submitEditButton bi bi-graph-up"  data-id="${kegiatanEdit._id}"></i> Keuntungan</button>
+                <button style="width: 100%;" data-opsi="rugi"   data-id="${kegiatanEdit._id}" id="editKerugiann" class="submitEditButton btn btn-danger"><i class="submitEditButton bi bi-graph-down"  data-id="${kegiatanEdit._id}" ></i> Kerugian</button>
+            </form>
+            <button id="tutupModalEdit" data-bs-dismiss="modal"  style="border: none;background: none" ></button>
+            ` 
+        })
+    }
+
+    if(e.target.classList.contains("submitEditButton")){
+        const id = e.target.getAttribute("data-id")
+        const kegiatanEdit = document.querySelector("#kegiatanEdit")
+        const tutupModalEdit = document.querySelector("#tutupModalEdit")
+        const pendapatanEdit = document.querySelector("#pendapatanEdit")
+        const pendapatanke = document.querySelector(`.pendapatanke${id}`)
+        const opsi = e.target.getAttribute("data-opsi")
+        let submitEdit ;
+        if (kegiatanEdit.value === "") {
+            kegiatanEdit.setAttribute("placeholder", "Kegiatan Wajib Di isi")
+            return false
+        }
+        if (pendapatanEdit.value === "") {
+            pendapatanEdit.setAttribute("placeholder", "Pendapatan Wajib di isi")
+            return false
+        }
+        if (opsi === "untung") {
+            submitEdit = document.querySelector("#editKeuntungan")
+        } else {
+            submitEdit = document.querySelector("#editKerugiann")
+        }
+        submitEdit.disabled = true;
+        const isiSubmit = submitEdit.innerHTML;
+        submitEdit.innerHTML = 
+        `
+        ${isiSubmit}
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        `
+        fetch("/home?_method=PUT",{
+            method:"post",
+            headers:{
+                "Content-Type": 'application/json'
+            },
+            body:JSON.stringify({
+                id:id,
+                kegiatan:kegiatanEdit.value,
+                pendapatan:pendapatanEdit.value,
+                opsi,
+            })
+        })
+        .finally(() => {
+            tutupModalEdit.click()
+            tidakDiperbaiki()
+        })
+        .then(() => {
+            pendapatanke.innerHTML = 
+            `
+            <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between"
+            style="background-color: ${opsi === "untung" ? "#68B984" : "#F15A59"};box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+            <h6 class="my-1"  >${kegiatanEdit.value}</h6>
+                <h6 class="kontenKiri text-light my-1" data-id="${id}">
+                    ${opsi === "untung" ? " <i class='bi bi-arrow-up'></i>" : "<i class='bi bi-arrow-down'></i>"}
+                    ${ Number(pendapatanEdit.value).toLocaleString("id-ID",{style:"currency",currency:"IDR"})}
+                </h6>
+            </div>
+            `
+        })
+
+
+    }
+
 
 
 })

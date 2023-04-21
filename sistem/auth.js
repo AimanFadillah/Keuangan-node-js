@@ -1,15 +1,17 @@
 const fs = require("file-system");
 const CryptoJS = require("crypto-js")
-const key = "123"
+const key = "M1N3CR4FTJ0K0W1P4B0W0G3M1NG"
 
-const dataUsers = () => {
-    const buffer = fs.readFileSync("./data/user.json","utf-8")
-    const user = JSON.parse(buffer); 
-    return user;
+require("../sistem/db");
+const { Pemiliks } = require("../modal/pemilik.js");
+
+const dataUsers = async () => {
+    const data = await Pemiliks.find({_id:"643f9f89a2b870c355eff09a"})
+    return data;
 }
 
-function login(email,password){
-    const users = dataUsers()
+async function login(email,password){
+    const users = await dataUsers()
     const data = users.find(user => user.email === email);
     if(data){
         const hasPas = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex)
