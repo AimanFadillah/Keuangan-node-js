@@ -6,7 +6,7 @@
                 <form action="/login" method="post" >
                     <div class="mb-3">
                       <label for="email" class="form-label"><small>Email address</small></label>
-                      <input type="email" name="email"  required class="form-control" id="email" >
+                      <input type="email" name="email" value="<% data.email || '' %>" required class="form-control" id="email" >
                     </div>
                     <div class="mb-3">
                       <label for="password" class="form-label"><small>Password</small></label>

@@ -1,4 +1,158 @@
-<h1 >Hello <%= user.name %></h1>
-<form action="/logout" method="post">
-    <button class="btn btn-danger fw-bold">Logout</button>
-</form>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 m-3">
+            <div class="bg-light rounded p-2">
+                <div class="d-flex justify-content-center">
+                    <div style="width: 190px;height: 190px;flex-direction: column;box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;;" class="border my-3 d-flex justify-content-center  border-success rounded-circle" >
+                        <h1 class="text-center text-success" id="tabungan" ><%= Number(pemilik.tabungan).toLocaleString("id-ID",{style:"currency",currency:"IDR",minimumFractionDigits: 0}) %></h1>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between" style="gap: 3px;">
+                    <div class="text-center py-1 rounded-top " id="pendapatan" style="width: 100%;background-color: #917FB3;color: white;"><i class="bi bi-wallet2"></i> Pendapatan</div>
+                    <div class="text-center py-1 rounded-top" id="penghasilan" style="width: 100%;border:1px #917FB3 solid;border-bottom: 0px;"><i class="bi bi-coin"></i> Penghasilan</div>
+                </div>
+                <div class="rounded-bottom p-2"  id="containerPendapatan" style="background-color: #917FB3;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                    <div class="d-flex justify-content-end">
+                        <button class="badge bg-danger border-0 mx-2" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"><i class="bi bi-list-nested"></i> <span id="total" ><%= pendapatan.length %></span></button>
+                        <button class="badge bg-primary border-0 " id="perbaiki" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"><i class="bi bi-tools"></i> Perbaiki</button>
+                        <button class="badge bg-success border-0 ms-2" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;" data-bs-toggle="modal" data-bs-target="#modalCreate"><i class="bi bi-plus-lg"></i> Tambah</button>
+                    </div>
+                    
+                    <div id="wadahPendapatan">
+                    <% if(pendapatan.length !== 0) { %>
+                    <% for(pendapatans of pendapatan) { %>
+                      <div class="pendapatanke<%= pendapatans.id %> kegiatan"  <% if(no == 1){ %>id="pertamaKegiatan"<% } %>>
+                        <% if(pendapatans.opsi === "untung") { %>
+                        <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between"
+                        style="background-color: #68B984;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                        <% }else { %>    
+                        <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between" 
+                        style="background-color: #F15A59;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                        <% } %>
+                          <h6 class="my-1"  ><%= pendapatans.kegiatan %></h6>
+                            <h6 class="kontenKiri text-light my-1" data-id="<%= pendapatans.id %>">
+                              <% if(pendapatans.opsi === "untung") { %>
+                              <i class="bi bi-arrow-up"></i></i>
+                              <% }else { %>
+                              <i class="bi bi-arrow-down"></i></i>
+                              <% }no++ %>
+                              <%= Number(pendapatans.pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR"}) %></h6>
+                        </div>
+                      </div>                                                                                                         
+                    <% }  %>
+                    <% }else { %>
+                      <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-center" id="pertamaKegiatan" style="background-color: #7C96AB ;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                          <h5 class="my-1"><i class="bi bi-server"></i> Tidak Ada Kegiatan</h5>
+                      </div>
+                    <% } %>
+                    </div>
+                </div>
+                <div class="rounded-bottom p-2" id="containerPenghasilan" style="display: none;background-color: #917FB3;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;"> 
+                    <div class="rounded mt-2 px-1 d-flex justify-content-between" style="align-items: center;background-color: #E8A0BF;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;;">
+                        <h6 class="mt-2">Harian</h6>
+                        <div class="d-flex justify-content-end m-1" id="sideHarian" >  
+                          <% if(pemilik.perhari === 0) { %>
+                          <button data-pendapatan="Harian" class="powerPendapatan badge bg-danger ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                            <i data-pendapatan="Harian" class="powerPendapatan bi bi-power"></i>
+                          </button>
+                          <% }else { %>
+                            <input type="number" value="<%= pemilik.perhari %>" class="form-control p-0 px-1" placeholder="Harian" style="box-shadow:rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset; ;border: none;width: 50%;" name="Harian" id="inputHarian" >
+                            <button data-pendapatan="Harian" id="buttonTipeHarian" class="offPendapatan badge bg-success ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                              <i data-pendapatan="Harian" class="offPendapatan bi bi-power"></i>
+                            </button>
+                          <% } %>
+                        </div>
+                    </div>
+                    <div class="rounded mt-2 px-1 d-flex justify-content-between" style="align-items: center;background-color: #C0DBEA;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;;">
+                        <h6 class="mt-2">Mingguan</h6>
+                        <div class="d-flex justify-content-end m-1" id="sideMingguan">  
+                          <% if(pemilik.perminggu === 0) { %>
+                            <button data-pendapatan="Mingguan" class="powerPendapatan badge bg-danger ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                              <i data-pendapatan="Mingguan" class="powerPendapatan bi bi-power"></i>
+                            </button>
+                            <% }else { %>
+                              <input type="number" value="<%= pemilik.perminggu %>" class="form-control p-0 px-1" placeholder="Mingguan" style="box-shadow:rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset; ;border: none;width: 50%;" name="Mingguan" id="inputMingguan" >
+                              <button data-pendapatan="Mingguan" id="buttonTipeMingguan" class="offPendapatan badge bg-success ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                                <i data-pendapatan="Mingguan" class="offPendapatan bi bi-power"></i>
+                              </button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="rounded mt-2 px-1 d-flex justify-content-between" style="align-items: center;background-color: #DDFFBB;box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;;">
+                        <h6 class="mt-2">Bulanan</h6>
+                        <div class="d-flex justify-content-end m-1" id="sideBulanan" >  
+                          <% if(pemilik.perbulan === 0) { %>
+                            <button data-pendapatan="Bulanan" class="powerPendapatan badge bg-danger ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                              <i data-pendapatan="Bulanan" class="powerPendapatan bi bi-power"></i>
+                            </button>
+                            <% }else { %>
+                              <input type="number" value="<%= pemilik.perbulan %>" class="form-control p-0 px-1" placeholder="Bulanan" style="box-shadow:rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset; ;border: none;width: 50%;" name="Bulanan" id="inputBulanan" >
+                              <button data-pendapatan="Bulanan" id="buttonTipeBulanan" class="offPendapatan badge bg-success ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                                <i data-pendapatan="Bulanan" class="offPendapatan bi bi-power"></i>
+                              </button>
+                          <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- Modal Buat -->
+  <div class="modal fade" id="modalCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body rounded">
+            <form id="formCreate" >
+              <h3 class="text-center mb-3">Buat Pendapatan</h3>
+                <div class="mb-3">
+                  <label for="kegiatan" class="fw-bold form-label"><i class="bi bi-activity"></i> Kegiatan</label>
+                  <input type="text" name="kegiatan" required class="form-control" id="kegiatanCreate" >
+                  <div id="note" class="form-text">Maksimal 10 huruf</div>
+                </div>
+                <div class="mb-3">
+                  <label for="pendapatan" class="fw-bold form-label"><i class="bi bi-cash"></i> Pendapatan</label>
+                  <input type="number" required name="pendapatan" class="form-control" id="pendapatanCreate" >
+                </div>
+                <h6 class="text-dark fw-bold"><i class="bi bi-question-lg"></i> Opsi</h6>
+                <button id="createKeuntungan" style="width: 100%;" type="button" data-opsi="untung" class="submitCreate btn btn-success mb-1"><i class="bi bi-graph-up"></i> Keuntungan</button>
+                <button id="createKerugian" style="width: 100%;" type="button" data-opsi="rugi" class="submitCreate btn btn-danger">
+                  <i class="bi bi-graph-down"></i>
+                  Kerugian
+                </button>
+            </form>
+            <button id="tutupModal" data-bs-dismiss="modal"  style="border: none;background: none" ></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit -->
+  <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body rounded " id="bodyEdit">
+            
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Hapus -->
+  <div class="modal fade" id="modalHapus" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body rounded" id="bodyHapus" >
+          <small style="text-align: center;">Jika anda menghapus ini maka akan mempengaruhi isi tabungan</small>
+            <div class="d-flex mt-3 justify-content-between">
+              <button class="btn btn-danger" data-bs-dismiss="modal" style="width: 49%;" >Batal</button>
+              <button class="btn btn-success" style="width: 49%;" >Yakin</button>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+<script src="home.js" ></script>
