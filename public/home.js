@@ -10,24 +10,20 @@ const wadahPendapatan = document.querySelector("#wadahPendapatan")
 const bodyEdit = document.querySelector("#bodyEdit")
 let total = document.querySelector("#total")
 const tabungan = document.querySelector("#tabungan")
+const nyalaButton = document.querySelectorAll(".nyalaButton")
 
 penghasilan.addEventListener("click", () => {
-    penghasilan.setAttribute("style","width: 100%;background-color: #917FB3;color: white;")
-    pendapatan.setAttribute("style","width: 100%;border:1px #917FB3 solid;border-bottom: 0px;")
-    containerPendapatan.style.display = "none";
-    containerPenghasilan.style.display = "block";
+    TampilkanPenghasilan();
 })
 
-pendapatan.addEventListener("click",() => {
-    pendapatan.setAttribute("style","width: 100%;background-color: #917FB3;color: white;")
-    penghasilan.setAttribute("style","width: 100%;border:1px #917FB3 solid;border-bottom: 0px;")
-    containerPendapatan.style.display = "block";
-    containerPenghasilan.style.display = "none";
+pendapatan.addEventListener("click", () => {
+    TampilkanPendapatan();
 })
 
-
-
-
+for (nyala of nyalaButton) {
+    const tipe = nyala.getAttribute("data-pendapatan")
+    savePenghasilan(tipe);
+}
 
 document.addEventListener("click", (e) => {
 
@@ -49,98 +45,142 @@ document.addEventListener("click", (e) => {
         HapusKegiatan(e.target);
     }
 
-    if(e.target.classList.contains("editPendapatan")){
-       editPendapatan(e.target)
+    if (e.target.classList.contains("editPendapatan")) {
+        editPendapatan(e.target)
     }
 
-    if(e.target.classList.contains("submitEditButton")){
+    if (e.target.classList.contains("submitEditButton")) {
         updateKegiatan(e.target)
     }
 
-    if(e.target.classList.contains("powerPendapatan")){
+    if (e.target.classList.contains("powerPendapatan")) {
         const tipe = e.target.getAttribute("data-pendapatan")
-        const wadah = document.querySelector(`#side${tipe}`)
-        wadah.innerHTML = 
+        NyalaPenghasilan(tipe)
+        savePenghasilan(tipe)
+    }
+
+    if (e.target.classList.contains("offPendapatan")) {
+        const tipe = e.target.getAttribute("data-pendapatan")
+        MatikanPenghasilan(tipe);
+    }
+
+    if (e.target.classList.contains("savePendapatan")) {
+        const tipe = e.target.getAttribute("data-pendapatan");
+        simpanPenghasilan(tipe,e.target)
+    }
+
+})
+
+// FUNCTION FUNCTION 
+function TampilkanPendapatan () {
+    pendapatan.setAttribute("style", "width: 100%;background-color: #917FB3;color: white;")
+    penghasilan.setAttribute("style", "width: 100%;border:1px #917FB3 solid;border-bottom: 0px;")
+    containerPendapatan.style.display = "block";
+    containerPenghasilan.style.display = "none";
+}
+
+function TampilkanPenghasilan () {
+    penghasilan.setAttribute("style", "width: 100%;background-color: #917FB3;color: white;")
+    pendapatan.setAttribute("style", "width: 100%;border:1px #917FB3 solid;border-bottom: 0px;")
+    containerPendapatan.style.display = "none";
+    containerPenghasilan.style.display = "block";
+}
+
+function NyalaPenghasilan(tipe) {
+    const wadah = document.querySelector(`#side${tipe}`)
+    wadah.innerHTML =
         `
         <input type="number" class="form-control p-0 px-1" placeholder="${tipe}" style="box-shadow:rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset; ;border: none;width: 50%;" class="rounded" name="${tipe}" id="input${tipe}" >
         <button data-pendapatan="${tipe}" id="buttonTipe${tipe}" class="offPendapatan badge bg-danger ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
           <i data-pendapatan="${tipe}" class="offPendapatan bi bi-power"></i>
         </button>
         `
-        const input = document.querySelector(`#input${tipe}`);
-        const button = document.querySelector(`#buttonTipe${tipe}`)
-        
-        input.addEventListener("keyup",() => {
+}
 
-            if(input.value === ""){
-                if(button.classList.contains("bg-success")){
-                    button.classList.remove("bg-success")
-                    button.classList.add("bg-danger")
-                    button.innerHTML = `<i data-pendapatan="${tipe}" class="offPendapatan bi bi-power"></i>`
-                }
-                return false;
+function MatikanPenghasilan(tipe){
+    const wadah = document.querySelector(`#side${tipe}`)
+    fetch(`/penghasilan?update${tipe}=true`, {
+        method: "post",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(
+            {
+                isi: 0,
             }
-
-            button.classList.remove("bg-danger")
-            button.classList.add("bg-success")
-            button.innerHTML = `<i data-pendapatan="${tipe}" data-isi="${input.value}" class="savePendapatan bi bi-check2"></i>`
-
-        })
-    }
-
-    if(e.target.classList.contains("offPendapatan")){
-        const tipe = e.target.getAttribute("data-pendapatan")
-        const wadah = document.querySelector(`#side${tipe}`)
-        fetch(`/penghasilan?update${tipe}=true`,{
-            method:"post",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(
-                {
-                    isi : 0,
-                }
-            )
-        })
+        )
+    })
         .then(() => {
-            wadah.innerHTML = 
-            `
-            <button data-pendapatan="${tipe}" class="powerPendapatan badge bg-danger ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-              <i data-pendapatan="${tipe}" class="powerPendapatan bi bi-power"></i>
-            </button>
-            `
+            wadah.innerHTML =
+                `
+        <button data-pendapatan="${tipe}" class="powerPendapatan badge bg-danger ms-2 border-0 py-1" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+          <i data-pendapatan="${tipe}" class="powerPendapatan bi bi-power"></i>
+        </button>
+        `
         })
-    }
+}
 
-    if(e.target.classList.contains("savePendapatan")){
-        const tipe = e.target.getAttribute("data-pendapatan");
-        const button = document.querySelector(`#buttonTipe${tipe}`)
-        button.innerHTML = `<i class="bi bi-arrow-clockwise"></i>`;
-        fetch(`/penghasilan?update${tipe}=true`,{
-            method:"post",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(
-                {
-                    isi : e.target.getAttribute("data-isi"),
-                }
-            )
-        })
+function simpanPenghasilan(tipe,target){
+    const button = document.querySelector(`#buttonTipe${tipe}`)
+    button.innerHTML = `<i class="bi bi-arrow-clockwise"></i>`;
+    fetch(`/penghasilan?update${tipe}=true`, {
+        method: "post",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(
+            {
+                isi: target.getAttribute("data-isi"),
+            }
+        )
+    })
         .then(() => {
             button.innerHTML = `<i data-pendapatan="${tipe}" class="offPendapatan bi bi-power"></i>`
-            if(button.classList.contains("bg-danger")){
-                button.classList.remove("bg-danget")
+            if (button.classList.contains("savePendapatan")) {
+                button.classList.remove("savePendapatan")
+                button.classList.add("offPendapatan");
+            }
+            if (button.classList.contains("bg-danger")) {
+                button.classList.remove("bg-danger")
                 button.classList.add("bg-success")
             }
         })
-        
-    }
+}
 
-})
 
-// function 
-function diperbaiki (target) {
+function savePenghasilan(tipe) {
+    const input = document.querySelector(`#input${tipe}`);
+    const button = document.querySelector(`#buttonTipe${tipe}`)
+
+    input.addEventListener("keyup", () => {
+
+        if (input.value === "") {
+            if (button.classList.contains("bg-success")) {
+                button.classList.remove("bg-success")
+                button.classList.add("bg-danger")
+                button.innerHTML = `<i data-pendapatan="${tipe}" class="offPendapatan bi bi-power"></i>`
+            }
+            if (button.classList.contains("savePendapatan")) {
+                button.classList.remove("savePendapatan")
+                button.classList.add("offPendapatan");
+            }
+            return false;
+        }
+
+        button.classList.remove("bg-danger")
+        button.classList.add("bg-success")
+        button.innerHTML = `<i data-pendapatan="${tipe}" data-isi="${input.value}" class="savePendapatan bi bi-check2"></i>`
+        if (button.classList.contains("offPendapatan")) {
+            button.classList.remove("offPendapatan")
+            button.classList.add("savePendapatan");
+        }
+
+    })
+}
+
+
+
+function diperbaiki(target) {
     const kontenKiri = document.querySelectorAll(".kontenKiri")
 
     for (kontenkiris of kontenKiri) {
@@ -169,10 +209,10 @@ function tidakDiperbaiki() {
     diperbaiki.setAttribute("id", "perbaiki")
 }
 
-function modalHapusPendapatan (target) {
+function modalHapusPendapatan(target) {
     const id = target.getAttribute("data-id");
     bodyHapus.innerHTML =
-    `
+        `
     <small style="text-align: center;">Jika anda menghapus ini maka akan mempengaruhi isi tabungan</small>
         <div class="d-flex mt-3 justify-content-between">
           <button class="btn btn-danger" id="batalHapusPendapatan" data-bs-dismiss="modal" style="width: 49%;" >Batal</button>
@@ -229,7 +269,7 @@ function Create(target) {
         .then(response => response.json())
         .then(data => {
             const id = data[0]._id;
-            tabungan.innerHTML = Number(data[0].pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR",minimumFractionDigits: 0})
+            tabungan.innerHTML = Number(data[0].pendapatan).toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 })
             if (total.innerHTML === "0") {
                 wadahPendapatan.innerHTML =
                     `
@@ -289,7 +329,7 @@ function HapusKegiatan(target) {
         })
         .then(response => response.json())
         .then(data => {
-            tabungan.innerHTML = Number(data[0].pendapatan).toLocaleString("id-ID",{style:"currency",currency:"IDR",minimumFractionDigits: 0})
+            tabungan.innerHTML = Number(data[0].pendapatan).toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 })
             total.innerHTML = Number(total.innerHTML) - 1;
             if (pendapatanke.id) {
                 wadahPendapatan.removeChild(pendapatanke)
@@ -314,10 +354,10 @@ function HapusKegiatan(target) {
         })
 }
 
-function editPendapatan (target) {
+function editPendapatan(target) {
     const id = target.getAttribute("data-id");
-    bodyEdit.innerHTML = 
-    `
+    bodyEdit.innerHTML =
+        `
     <div class="d-flex justify-content-center">
         <div class="spinner-border" style="width: 3rem; height: 3rem;color:#41644A" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -325,11 +365,11 @@ function editPendapatan (target) {
     </div>
     `
     fetch(`/?find=${id}`)
-    .then(response => response.json())
-    .then(data => {
-        const kegiatanEdit = data[0];
-        bodyEdit.innerHTML = 
-        `
+        .then(response => response.json())
+        .then(data => {
+            const kegiatanEdit = data[0];
+            bodyEdit.innerHTML =
+                `
         <form>
             <h3 class="text-center mb-3">Ubah Pendapatan</h3>
             <div class="mb-3">
@@ -346,19 +386,19 @@ function editPendapatan (target) {
             <button style="width: 100%;" data-opsi="rugi"   data-id="${kegiatanEdit._id}" id="editKerugiann" class="submitEditButton btn btn-danger"><i class="submitEditButton bi bi-graph-down"  data-id="${kegiatanEdit._id}" ></i> Kerugian</button>
         </form>
         <button id="tutupModalEdit" data-bs-dismiss="modal"  style="border: none;background: none" ></button>
-        ` 
-    })
+        `
+        })
 }
 
 
-function updateKegiatan (target) {
+function updateKegiatan(target) {
     const id = target.getAttribute("data-id")
     const kegiatanEdit = document.querySelector("#kegiatanEdit")
     const tutupModalEdit = document.querySelector("#tutupModalEdit")
     const pendapatanEdit = document.querySelector("#pendapatanEdit")
     const pendapatanke = document.querySelector(`.pendapatanke${id}`)
     const opsi = target.getAttribute("data-opsi")
-    let submitEdit ;
+    let submitEdit;
     if (kegiatanEdit.value === "") {
         kegiatanEdit.setAttribute("placeholder", "Kegiatan Wajib Di isi")
         return false
@@ -374,40 +414,40 @@ function updateKegiatan (target) {
     }
     submitEdit.disabled = true;
     const isiSubmit = submitEdit.innerHTML;
-    submitEdit.innerHTML = 
-    `
+    submitEdit.innerHTML =
+        `
     ${isiSubmit}
     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
     `
-    fetch("/home?_method=PUT",{
-        method:"post",
-        headers:{
+    fetch("/home?_method=PUT", {
+        method: "post",
+        headers: {
             "Content-Type": 'application/json'
         },
-        body:JSON.stringify({
-            id:id,
-            kegiatan:kegiatanEdit.value,
-            pendapatan:pendapatanEdit.value,
+        body: JSON.stringify({
+            id: id,
+            kegiatan: kegiatanEdit.value,
+            pendapatan: pendapatanEdit.value,
             opsi,
         })
     })
-    .finally(() => {
-        tutupModalEdit.click()
-        tidakDiperbaiki()
-    })
-    .then(response => response.json())
-    .then(data => {
-        tabungan.innerHTML = Number(data).toLocaleString("id-ID",{style:"currency",currency:"IDR",minimumFractionDigits: 0})
-        pendapatanke.innerHTML = 
-        `
+        .finally(() => {
+            tutupModalEdit.click()
+            tidakDiperbaiki()
+        })
+        .then(response => response.json())
+        .then(data => {
+            tabungan.innerHTML = Number(data).toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 })
+            pendapatanke.innerHTML =
+                `
         <div class="rounded mt-2 px-2 pb-1 d-flex justify-content-between"
         style="background-color: ${opsi === "untung" ? "#68B984" : "#F15A59"};box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
         <h6 class="my-1"  >${kegiatanEdit.value}</h6>
             <h6 class="kontenKiri text-light my-1" data-id="${id}">
                 ${opsi === "untung" ? " <i class='bi bi-arrow-up'></i>" : "<i class='bi bi-arrow-down'></i>"}
-                ${ Number(pendapatanEdit.value).toLocaleString("id-ID",{style:"currency",currency:"IDR"})}
+                ${Number(pendapatanEdit.value).toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
             </h6>
         </div>
         `
-    })
+        })
 }

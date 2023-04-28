@@ -64,6 +64,15 @@ cron.schedule("0 22 * * *", async () => {
             const text = "success";
         })
     }
+    Pendapatans.find()
+    .then( async data => {
+        const limit = data.length - 20;
+        if(limit > 0){
+            for(let a = 0;a < limit;a++){
+                await Pendapatans.deleteOne({_id:data[a]["_id"]})
+            }
+        }
+    })
 });
 
 // MINGGUAN
