@@ -12,7 +12,7 @@ const key = auth.key;
 const cron = require("node-cron");
 const bodyParser = require("body-parser")
 const methodOverridde = require("method-override");
-
+const idPemilik = "643f9f89a2b870c355eff09a";
 require("./sistem/db");
 const { Pendapatans } = require("./modal/pendapatan.js");
 const { Pemiliks } = require("./modal/pemilik.js");
@@ -40,9 +40,84 @@ app.use(session({
 
 
 
-cron.schedule("*/1 * * * *", () => {
-    console.log("muncul cuman 1 dan permenit")
-})
+// HARIAN 
+cron.schedule("0 22 * * *", async () => {
+    const userPemilik = await Pemiliks.find({_id:idPemilik})
+    if(userPemilik[0].perhari !== 0){
+
+        const newPendapatan = await Pendapatans.insertMany({
+            kegiatan: "Harian",
+        pendapatan: userPemilik[0].perhari,
+        opsi:"untung",
+        tanggal : new Date(),
+        })
+        const hasil = Number(userPemilik[0].tabungan) + Number(userPemilik[0].perhari)
+        Pemiliks.updateOne(
+            {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+        .then(() => {
+            const text = "success";
+        })
+    }
+});
+
+// MINGGUAN
+cron.schedule("30 16 * * 1", async () => {
+    const userPemilik = await Pemiliks.find({_id:idPemilik})
+    if(userPemilik[0].perminggu !== 0){
+
+        const newPendapatan = await Pendapatans.insertMany({
+            kegiatan: "Mingguan",
+        pendapatan: userPemilik[0].perminggu,
+        opsi:"untung",
+        tanggal : new Date(),
+        })
+        const hasil = Number(userPemilik[0].tabungan) + Number(userPemilik[0].perminggu)
+        Pemiliks.updateOne(
+            {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+        .then(() => {
+            const text = "success";
+        })
+    }
+});
+
+// BULANAN
+cron.schedule("0 12 1 * *",async () => {
+    const userPemilik = await Pemiliks.find({_id:idPemilik})
+    if(userPemilik[0].perbulan !== 0){
+
+        const newPendapatan = await Pendapatans.insertMany({
+            kegiatan: "Bulanan",
+        pendapatan: userPemilik[0].perbulan,
+        opsi:"untung",
+        tanggal : new Date(),
+        })
+        const hasil = Number(userPemilik[0].tabungan) + Number(userPemilik[0].perbulan)
+        Pemiliks.updateOne(
+            {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+        .then(() => {
+            const text = "success";
+        })
+    }
+});
+
 
 
 app.get("/", auth.checkLogin, async (req, res) => {
@@ -52,55 +127,138 @@ app.get("/", auth.checkLogin, async (req, res) => {
         return;
     }
     const pendapatan = await Pendapatans.find().sort({ tanggal: -1 });
+    const tabungan = await Pemiliks.find({_id:idPemilik})
     res.render("home", {
         layout: "layout/template",
         title: "HomePage",
         pendapatan,
         no:1,
+        pemilik:tabungan[0]
     })
+})
+
+app.post("/penghasilan",auth.checkLogin,async (req,res) => {
+    if(req.query.updateHarian === "true"){
+        Pemiliks.updateOne(
+            {_id:idPemilik},
+            {
+                $set:{
+                    perhari:req.body.isi,
+                },
+            },
+        )
+        .then(() => {
+            res.json("success")
+        })
+    }else
+    if(req.query.updateMingguan === "true"){
+        Pemiliks.updateOne(
+            {_id:idPemilik},
+            {
+                $set:{
+                    perminggu:req.body.isi,
+                },
+            },
+        )
+        .then(() => {
+            res.json("success")
+        })
+    }else
+    if(req.query.updateBulanan === "true"){
+        Pemiliks.updateOne(
+            {_id:idPemilik},
+            {
+                $set:{
+                    perbulan:req.body.isi,
+                },
+            },
+        )
+        .then(() => {
+            res.json("success")
+        })
+    }
 })
 
 app.post("/home", auth.checkLogin, async (req, res) => {
     req.body.tanggal = new Date();
-    let newPendapatan;
-
-        newPendapatan = await Pendapatans.insertMany(req.body)
-        const userPemilik = await Pemiliks.find({_id:"643f9f89a2b870c355eff09a"}) 
-        if(req.body.opsi === "untung"){
-            const hasil = Number(userPemilik[0].tabungan) + Number(req.body.pendapatan)
-            Pemiliks.updateOne(
-                {_id:"643f9f89a2b870c355eff09a"},
-                {
-                    $set:{
-                        tabungan:Number(hasil),
-                    },
-                },
-            )
-        }else{
-            const hasil = Number(userPemilik[0].tabungan) - Number(req.body.pendapatan)
-            Pemiliks.updateOne(
-                {_id:"643f9f89a2b870c355eff09a"},
+    const newPendapatan = await Pendapatans.insertMany(req.body)
+    const userPemilik = await Pemiliks.find({_id:idPemilik}) 
+    if(req.body.opsi === "untung"){
+        const hasil = Number(userPemilik[0].tabungan) + Number(req.body.pendapatan)
+        newPendapatan[0].pendapatan = hasil;
+        Pemiliks.updateOne(
+                {_id:idPemilik},
                 {
                     $set:{
                         tabungan:hasil,
                     },
                 },
             )
+            .then(() => {
+                res.json(newPendapatan)
+            })
+        }else{
+            const hasil = Number(userPemilik[0].tabungan) - Number(req.body.pendapatan)
+            newPendapatan[0].pendapatan = hasil;
+            Pemiliks.updateOne(
+                {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+            .then(() => {
+                res.json(newPendapatan)
+            })
         }
-
-    res.json(newPendapatan)
 })
 
 app.delete("/home",auth.checkLogin,async (req,res) => {
-    try{
-       await Pendapatans.deleteOne({_id:req.body.id})
-    }catch{
-        res.redirect("/")
-    }
-    res.redirect("/")
+    const jumlahPendapatan = await Pendapatans.find({_id:req.body.id})
+    await Pendapatans.deleteOne({_id:req.body.id})
+    const userPemilik = await Pemiliks.find({_id:idPemilik}) 
+    if(jumlahPendapatan[0].opsi === "untung"){
+        const hasil = Number(userPemilik[0].tabungan) - Number(jumlahPendapatan[0].pendapatan)
+        jumlahPendapatan[0].pendapatan = hasil;
+        Pemiliks.updateOne(
+                {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+            .then(() => {
+                res.json(jumlahPendapatan)
+            })
+        }else{
+            const hasil = Number(userPemilik[0].tabungan) + Number(jumlahPendapatan[0].pendapatan)
+            jumlahPendapatan[0].pendapatan = hasil;
+            Pemiliks.updateOne(
+                {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+            .then(() => {
+                res.json(jumlahPendapatan)
+            })
+        }
 })
 
 app.put("/home",auth.checkLogin,async(req,res) => {
+    const userPemilik = await Pemiliks.find({_id:idPemilik}) 
+    const pendapatanOld = await Pendapatans.find({_id:req.body.id})
+    let stockOld;
+    if(pendapatanOld[0].opsi === "untung"){
+        stockOld = Number(userPemilik[0].tabungan) - Number(pendapatanOld[0].pendapatan);
+    }else{
+        stockOld = Number(userPemilik[0].tabungan) + Number(pendapatanOld[0].pendapatan);
+    }
+
     await Pendapatans.updateOne(
         {_id:req.body.id},
         {
@@ -111,7 +269,33 @@ app.put("/home",auth.checkLogin,async(req,res) => {
             },
         },
     )
-    res.redirect("/");
+    if(req.body.opsi === "untung"){
+        const hasil = Number(stockOld) + Number(req.body.pendapatan)
+        Pemiliks.updateOne(
+                {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+            .then(() => {
+                res.json(hasil)
+            })
+        }else{
+            const hasil = Number(stockOld) - Number(req.body.pendapatan)
+            Pemiliks.updateOne(
+                {_id:idPemilik},
+                {
+                    $set:{
+                        tabungan:hasil,
+                    },
+                },
+            )
+            .then(() => {
+                res.json(hasil)
+            })
+        }
 })
 
 app.get("/login", (req, res) => {
